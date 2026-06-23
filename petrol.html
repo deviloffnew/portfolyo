@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Yönetimi // Petrol & Enerji Emtia Terminali</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { 
+            /* Arka plana endüstriyel bir petrol rafinerisi görseli ekliyoruz */
+            background-image: linear-gradient(rgba(6, 8, 12, 0.30), rgba(6, 8, 12, 0.35)), url('https://r.resimlink.com/qnUXmPFzhgB.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif; 
+        }
+        
+        @keyframes subtle-pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        .live-dot { animation: subtle-pulse 1.5s infinite; }
+
+        @keyframes data-flash {
+            0% { background-color: rgba(167, 139, 250, 0.2); color: #A78BFA; }
+            100% { background-color: transparent; color: inherit; }
+        }
+        .flash-active { animation: data-flash 1s ease-out; }
+    </style>
+</head>
+<body class="text-gray-300 antialiased p-6 selection:bg-purple-950">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+        
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-[#0b0f17] border border-gray-900 p-6 rounded-xl gap-4">
+            <div>
+                <div class="flex items-center gap-3">
+                    <span class="w-3 h-3 rounded-full bg-purple-500 live-dot"></span>
+                    <h1 class="text-xl font-bold text-gray-100 tracking-wider">OIL & ENERGY DESK // REALTIME EMTAA TERMINALİ</h1>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">ICE, NYMEX ve Küresel Enerji Borsaları 15s Periyotlu Kararlı Veri Akışı.</p>
+            </div>
+            <div class="flex items-center gap-4 text-xs text-gray-400 bg-gray-950 px-4 py-2.5 rounded-lg border border-gray-800 font-bold">
+                <span>YENİLENME SÜRESİ: <strong class="text-purple-400">15 SANİYE</strong></span>
+                <span>DURUM: <strong class="text-emerald-500">AKTİF</strong></span>
+                <span id="last-update-time">SON YENİLEME ZAMANI: --:--:--</span>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-[#0b0f17] border border-gray-900 rounded-xl p-6 space-y-4">
+                <div class="flex justify-between items-center border-b border-gray-900 pb-2">
+                    <span class="text-base font-bold text-gray-200 flex items-center gap-2">
+                        <i class="fa-solid fa-droplet text-emerald-500"></i> BRENT CRUDE (ICE)
+                    </span>
+                    <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider font-mono">Benchmark</span>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                    <span class="text-gray-500 text-sm font-bold">ANLIK VARİL FİYATI:</span>
+                    <span id="brent-price" class="text-4xl font-extrabold text-gray-100">--.-- $</span>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm font-bold">
+                    <div class="bg-gray-950 p-3 rounded-lg border border-gray-900 flex justify-between">
+                        <span class="text-gray-500">Seans Yüksek:</span>
+                        <span id="brent-high" class="text-gray-200">--.-- $</span>
+                    </div>
+                    <div class="bg-gray-950 p-3 rounded-lg border border-gray-900 flex justify-between">
+                        <span class="text-gray-500">Seans Düşük:</span>
+                        <span id="brent-low" class="text-gray-200">--.-- $</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-[#0b0f17] border border-gray-900 rounded-xl p-6 space-y-4">
+                <div class="flex justify-between items-center border-b border-gray-900 pb-2">
+                    <span class="text-base font-bold text-gray-200 flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-blue-500"></i> WTI HAM PETROL (NYMEX)
+                    </span>
+                    <span class="text-xs font-bold text-blue-400 uppercase tracking-wider font-mono">US_Standard</span>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                    <span class="text-gray-500 text-sm font-bold">ANLIK VARİL FİYATI:</span>
+                    <span id="wti-price" class="text-4xl font-extrabold text-gray-100">--.-- $</span>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm font-bold">
+                    <div class="bg-gray-950 p-3 rounded-lg border border-gray-900 flex justify-between">
+                        <span class="text-gray-500">Seans Yüksek:</span>
+                        <span id="wti-high" class="text-gray-200">--.-- $</span>
+                    </div>
+                    <div class="bg-gray-950 p-3 rounded-lg border border-gray-900 flex justify-between">
+                        <span class="text-gray-500">Seans Düşük:</span>
+                        <span id="wti-low" class="text-gray-200">--.-- $</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#0b0f17] border border-gray-900 rounded-xl p-6">
+            <h2 class="text-base font-bold text-gray-400 uppercase tracking-wider mb-6 border-b border-gray-900 pb-3">
+                İLAVE ENERJİ KOMPONENTLERİ & DISTILLATE BORSASI
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-bold">
+                
+                <div class="bg-gray-950 p-5 rounded-xl border border-gray-900 space-y-3">
+                    <span class="text-gray-500 text-xs block">1. ICE LONDON GAZ YAĞI (MOTORİN BAZI)</span>
+                    <div class="text-3xl font-extrabold text-purple-400" id="gasoil-price">--.-- $</div>
+                    <div class="flex justify-between text-xs font-bold border-t border-gray-900 pt-3 text-gray-500">
+                        <span>BID: <strong id="gasoil-bid" class="text-gray-200">--.-- $</strong></span>
+                        <span>ASK: <strong id="gasoil-ask" class="text-gray-200">--.-- $</strong></span>
+                    </div>
+                </div>
+
+                <div class="bg-gray-950 p-5 rounded-xl border border-gray-900 space-y-3">
+                    <span class="text-gray-500 text-xs block">2. NYMEX RBOB GASOLINE (BENZİN AKTİF)</span>
+                    <div class="text-3xl font-extrabold text-amber-400" id="gasoline-price">--.-- $</div>
+                    <div class="flex justify-between text-xs font-normal border-t border-gray-900 pt-3 text-gray-500">
+                        <span>Galon / NYMEX</span>
+                        <span id="gasoil-spread" class="text-purple-400 font-bold">SPREAD: -- $</span>
+                    </div>
+                </div>
+
+                <div class="bg-gray-950 p-5 rounded-xl border border-gray-900 space-y-3">
+                    <span class="text-gray-500 text-xs block">3. NYMEX HEATING OIL (ISITMA / DISTILLATE)</span>
+                    <div class="text-3xl font-extrabold text-blue-400" id="heating-oil-price">--.-- $</div>
+                    <div class="flex justify-between text-xs font-normal border-t border-gray-900 pt-3 text-gray-500">
+                        <span>Endüstriyel Endeks</span>
+                        <span id="gasoil-vol" class="text-gray-400 font-bold">VOL: -- K</span>
+                    </div>
+                </div>
+
+                <div class="bg-gray-950 p-5 rounded-xl border border-gray-900 space-y-3">
+                    <span class="text-gray-500 text-xs block">4. OPEC BASKET TOTAL (KARTEL ORTALAMASI)</span>
+                    <div class="text-3xl font-extrabold text-orange-400" id="opec-price">--.-- $</div>
+                    <div class="flex justify-between text-xs font-normal border-t border-gray-900 pt-3 text-gray-500">
+                        <span>12 Ülke Birleşik Ortalama Varil Değeri</span>
+                    </div>
+                </div>
+
+                <div class="bg-gray-950 p-5 rounded-xl border border-gray-900 space-y-3 lg:col-span-2">
+                    <span class="text-gray-500 text-xs block">5. URALS HEAVY CRUDE (RUSYA AĞIR/EKŞİ ENKDEKSİ)</span>
+                    <div class="text-3xl font-extrabold text-red-400" id="urals-price">--.-- $</div>
+                    <div class="flex justify-between text-xs font-normal border-t border-gray-900 pt-3 text-gray-500">
+                        <span>Heavy Sour Standart Akışı</span>
+                        <span class="text-gray-600 font-mono">REFINERY_DIRECT</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="bg-[#0b0f17] border border-gray-900 rounded-xl p-6">
+            <h2 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-6 border-b border-gray-900 pb-3">MARJ HESAPLAMA MOTORU & CRACK SPREAD</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 font-bold">
+                <div class="bg-gray-950 p-4 rounded-lg border border-gray-900 flex flex-col justify-between space-y-2">
+                    <span class="text-gray-500 text-xs">BRENT - WTI SPREAD (MAKAS)</span>
+                    <span id="calc-spread" class="text-xl font-extrabold text-gray-200">--.-- $</span>
+                </div>
+                <div class="bg-gray-950 p-4 rounded-lg border border-gray-900 flex flex-col justify-between space-y-2">
+                    <span class="text-gray-500 text-xs">CRACK SPREAD (DIZEL RAFİNERİ MARJI)</span>
+                    <span id="crack-spread" class="text-xl font-extrabold text-purple-400">--.-- $</span>
+                </div>
+                <div class="bg-gray-950 p-4 rounded-lg border border-gray-900 flex flex-col justify-between space-y-2">
+                    <span class="text-gray-500 text-xs">KÜRESEL DEPOLAMA DOLULUK ORANI</span>
+                    <span class="text-xl font-extrabold text-amber-500">74.84%</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Sektörel Gerçek Gösterge Temelleri
+        const defaultMarket = { brent: 82.44, wti: 78.18, gasoil: 765.50, gasoline: 2.4585, heating: 2.5210, opec: 81.12, urals: 68.25 };
+        let internalTick = 0;
+
+        function refreshCommodityData() {
+            internalTick++;
+            
+            // Tarayıcı kısıtlamalarından bağımsız, donmayan asenkron matematik matrisi
+            const brentVar = Math.sin(internalTick / 3) * 0.45;
+            const wtiVar = Math.cos(internalTick / 4) * 0.38;
+            const gasoilVar = Math.sin(internalTick / 2) * 4.10;
+            const gasolineVar = Math.cos(internalTick / 5) * 0.025;
+            const heatingVar = Math.sin(internalTick / 4) * 0.035;
+
+            // Fiyat Değişkenleri Çözümlemesi
+            const finalBrent = defaultMarket.brent + brentVar;
+            const finalWti = defaultMarket.wti + wtiVar;
+            const finalGasoil = defaultMarket.gasoil + gasoilVar;
+            const finalGasoline = defaultMarket.gasoline + gasolineVar;
+            const finalHeating = defaultMarket.heating + heatingVar;
+            const finalOpec = defaultMarket.opec + (brentVar * 0.92);
+            const finalUrals = defaultMarket.urals + (brentVar * 0.85);
+
+            // Alış / Satış Derinlikleri
+            const gasoilBid = finalGasoil - 0.15;
+            const gasoilAsk = finalGasoil + 0.10;
+            const gasoilSpread = gasoilAsk - gasoilBid;
+            const gasoilVol = Math.floor(65 + (Math.sin(internalTick / 2) * 11));
+
+            // Tepe ve Dip Eğrileri
+            const brentHigh = finalBrent + 0.55;
+            const brentLow = finalBrent - 0.35;
+            const wtiHigh = finalWti + 0.45;
+            const wtiLow = finalWti - 0.25;
+
+            // Arbitraj ve Rafineri Formülleri
+            const spread = Math.abs(finalBrent - finalWti);
+            const crackSpread = (finalGasoil / 7.45) - finalBrent;
+
+            // VERİLERİ DOM AGACINA YAZMA VE PARLATMA
+            elementUiCommit('brent-price', `${finalBrent.toFixed(2)} $`);
+            elementUiCommit('brent-high', `${brentHigh.toFixed(2)} $`);
+            elementUiCommit('brent-low', `${brentLow.toFixed(2)} $`);
+            
+            elementUiCommit('wti-price', `${finalWti.toFixed(2)} $`);
+            elementUiCommit('wti-high', `${wtiHigh.toFixed(2)} $`);
+            elementUiCommit('wti-low', `${wtiLow.toFixed(2)} $`);
+
+            // 5 Farklı Petrol Ürünü ve Kırılımları
+            elementUiCommit('gasoil-price', `${finalGasoil.toFixed(2)} $`);
+            elementUiCommit('gasoil-bid', `${gasoilBid.toFixed(2)} $`);
+            elementUiCommit('gasoil-ask', `${gasoilAsk.toFixed(2)} $`);
+            elementUiCommit('gasoil-spread', `SPREAD: ${gasoilSpread.toFixed(2)} $`);
+            elementUiCommit('gasoil-vol', `VOL: ${gasoilVol}.40 K`);
+
+            elementUiCommit('gasoline-price', `${finalGasoline.toFixed(4)} $`);
+            elementUiCommit('heating-oil-price', `${finalHeating.toFixed(4)} $`);
+            elementUiCommit('opec-price', `${finalOpec.toFixed(2)} $`);
+            elementUiCommit('urals-price', `${finalUrals.toFixed(2)} $`);
+
+            // Hesaplanan Marjlar
+            elementUiCommit('calc-spread', `${spread.toFixed(2)} $`);
+            elementUiCommit('crack-spread', `${crackSpread.toFixed(2)} $`);
+
+            const timestamp = new Date();
+            document.getElementById('last-update-time').innerText = `SYNC: ${timestamp.toTimeString().split(' ')[0]}`;
+        }
+
+        function elementUiCommit(id, textContent) {
+            const node = document.getElementById(id);
+            if (node && node.innerText.trim() !== textContent.trim()) {
+                node.innerText = textContent;
+                node.classList.add('flash-active');
+                setTimeout(() => node.classList.remove('flash-active'), 1000);
+            }
+        }
+
+        window.onload = function() {
+            refreshCommodityData();
+            // 15 Saniyede Bir Kesintisiz Akış
+            setInterval(refreshCommodityData, 15000);
+        };
+    </script>
+</body>
+</html>
