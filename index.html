@@ -8,27 +8,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         html { scroll-behavior: smooth; }
-       body { 
-            /* Arka plana endüstriyel bir petrol rafinerisi görseli ekliyoruz */
-            background-image: linear-gradient(rgba(6, 8, 12, 0.92), rgba(6, 8, 12, 0.95)), url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1920'); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            font-family: Arial, sans-serif; 
+        body { background-color: #080B11; }
+        .code-font { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+        .gradient-card {
+            background: rgba(17, 24, 39, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
-        
+        .gradient-card:hover {
+            border-color: rgba(139, 92, 246, 0.25);
+            background: rgba(17, 24, 39, 0.8);
+        }
         @keyframes subtle-pulse {
-            0%, 100% { opacity: 0.3; }
+            0%, 100% { opacity: 0.4; }
             50% { opacity: 1; }
         }
         .live-dot { animation: subtle-pulse 1.5s infinite; }
-
-        @keyframes data-flash {
-            0% { background-color: rgba(167, 139, 250, 0.2); color: #A78BFA; }
-            100% { background-color: transparent; color: inherit; }
+        
+        @keyframes ticker-flash {
+            0% { color: #A78BFA; text-shadow: 0 0 8px rgba(167, 139, 250, 0.6); }
+            100% { color: inherit; text-shadow: none; }
         }
-        .flash-active { animation: data-flash 1s ease-out; }
+        .flash-update { animation: ticker-flash 0.8s ease-out; }
     </style>
 </head>
 <body class="text-gray-400 antialiased selection:bg-purple-900/50 selection:text-white">
@@ -50,6 +50,7 @@
             <a href="#experience" class="hover:text-gray-200 transition-colors">Deneyim</a>
             <a href="#projects" class="hover:text-gray-200 transition-colors">Projeler</a>
             <a href="#skills" class="hover:text-gray-200 transition-colors">Yetenekler</a>
+            <a href="#contact" class="hover:text-gray-200 transition-colors">İletişim</a>
             <a href="petrol.html" target="_blank" class="text-purple-400 hover:text-purple-300 font-bold flex items-center gap-1 transition-colors">
                 <i class="fa-solid fa-gas-pump text-[10px]"></i> Petrol_Borsası
             </a>
@@ -61,6 +62,7 @@
     </nav>
 
     <header class="relative pt-36 pb-12 px-6">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.08),transparent_45%)]"></div>
         <div class="max-w-4xl mx-auto relative z-10">
             <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-purple-950/30 border border-purple-900/30 text-[10px] text-purple-400 font-mono mb-4">
                 <span class="w-1.5 h-1.5 rounded-full bg-purple-500 live-dot"></span> AVAILABLE FOR PROJECTS
@@ -150,6 +152,44 @@
             <div id="view-skills-tags" class="flex flex-wrap gap-2"></div>
         </section>
 
+        <section id="contact" class="scroll-mt-24">
+            <div class="flex items-center gap-4 mb-6">
+                <h2 class="text-xs font-bold tracking-widest text-gray-500 uppercase font-mono">06 // İletişim & İş Birliği</h2>
+                <div class="h-[1px] bg-gray-900 flex-1"></div>
+            </div>
+            
+            <div class="max-w-2xl mx-auto bg-gray-950 border border-gray-900 p-6 rounded-xl shadow-2xl font-sans">
+                <p class="text-xs text-gray-500 font-mono mb-6 text-center uppercase tracking-wider">// Proje teklifleri ve teknik danışmanlık için sinyal gönderin.</p>
+                
+                <form action="https://formspree.io/f/xaqgnoor" method="POST" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[10px] font-mono uppercase text-gray-600">Adınız Soyadınız</label>
+                            <input type="text" name="name" required class="bg-[#0c101b] border border-gray-950 p-3 rounded text-gray-200 text-xs focus:outline-none focus:border-purple-600 transition-colors">
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[10px] font-mono uppercase text-gray-600">E-Posta Adresiniz</label>
+                            <input type="email" name="email" required class="bg-[#0c101b] border border-gray-950 p-3 rounded text-gray-200 text-xs focus:outline-none focus:border-purple-600 transition-colors">
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[10px] font-mono uppercase text-gray-600">Konu</label>
+                        <input type="text" name="subject" required class="bg-[#0c101b] border border-gray-950 p-3 rounded text-gray-200 text-xs focus:outline-none focus:border-purple-600 transition-colors">
+                    </div>
+                    
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[10px] font-mono uppercase text-gray-600">Mesaj / Proje Detayları</label>
+                        <textarea name="message" rows="5" required class="bg-[#0c101b] border border-gray-950 p-3 rounded text-gray-200 text-xs focus:outline-none focus:border-purple-600 transition-colors resize-none" placeholder="Altyapı gereksinimlerini veya mesajınızı buraya yazın..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-purple-900/30 hover:bg-purple-900/50 text-purple-400 border border-purple-800/40 font-mono py-3 rounded text-xs tracking-widest transition-colors uppercase font-bold">
+                        Mesajı Commit Et (Gönder)
+                    </button>
+                </form>
+            </div>
+        </section>
+
     </main>
 
     <footer class="border-t border-gray-950 bg-[#06080d] py-6 text-center text-[10px] code-font tracking-widest text-gray-600">
@@ -225,54 +265,4 @@
             const data = JSON.parse(localStorage.getItem('cv_dark_data')) || defaultData;
             
             document.title = `${data.name} | Infrastructure & Systems`;
-            document.getElementById('nav-name').innerText = data.name.toUpperCase().replace(" ", "_");
-            document.getElementById('view-title').innerText = data.name;
-            document.getElementById('view-subtitle').innerText = `${data.title} — ${data.subtitle}`;
-            document.getElementById('view-about').innerText = data.about;
-
-            let socialsHtml = '';
-            if(data.github) socialsHtml += `<a href="${data.github}" target="_blank" class="hover:text-white transition-colors"><i class="fa-brands fa-github"></i></a>`;
-            if(data.linkedin) socialsHtml += `<a href="${data.linkedin}" target="_blank" class="hover:text-white transition-colors"><i class="fa-brands fa-linkedin"></i></a>`;
-            document.getElementById('view-socials').innerHTML = socialsHtml;
-
-            document.getElementById('view-experience-list').innerHTML = data.experiences.map(exp => `
-                <div class="relative pl-2 font-sans">
-                    <span class="text-[11px] font-mono text-purple-400/80 block">${exp.date}</span>
-                    <h3 class="text-sm font-semibold text-gray-200 mt-0.5">${exp.role}</h3>
-                    <p class="text-xs text-gray-500 font-mono">${exp.company}</p>
-                </div>
-            `).join('') || '<p class="text-xs text-gray-600 italic">Dinamik kayıt yok.</p>';
-
-            document.getElementById('view-education-list').innerHTML = data.educations.map(edu => `
-                <div class="relative pl-2 font-sans">
-                    <span class="text-[11px] font-mono text-purple-400/80 block">${edu.date}</span>
-                    <h3 class="text-sm font-semibold text-gray-200 mt-0.5">${edu.degree}</h3>
-                    <p class="text-xs text-gray-500 font-mono">${edu.school}</p>
-                </div>
-            `).join('') || '<p class="text-xs text-gray-600 italic">Dinamik kayıt yok.</p>';
-
-            document.getElementById('view-projects-grid').innerHTML = data.projects.map(proj => `
-                <div class="gradient-card p-5 rounded-lg transition-all flex flex-col justify-between font-sans">
-                    <div>
-                        <h3 class="text-sm font-semibold text-gray-200 mb-1.5 font-mono">${proj.title}</h3>
-                        <p class="text-xs text-gray-500 font-light leading-relaxed mb-3">${proj.desc}</p>
-                    </div>
-                    ${proj.link && proj.link !== '#' ? `<a href="${proj.link}" target="_blank" class="text-[10px] font-mono uppercase text-purple-400 tracking-wider hover:text-purple-300">src_code →</a>` : ''}
-                </div>
-            `).join('') || '<p class="text-xs text-gray-600 italic">Dinamik kayıt yok.</p>';
-
-            const tags = data.skills.split(',').map(s => s.trim()).filter(s => s.length > 0);
-            document.getElementById('view-skills-tags').innerHTML = tags.map(tag => `
-                <span class="bg-gray-950 border border-gray-800 text-gray-400 px-2.5 py-1 rounded text-xs font-mono">${tag}</span>
-            `).join('');
-        }
-
-        window.onload = function() {
-            renderCV();
-            fetchHighFrequencyRates();
-            setInterval(fetchHighFrequencyRates, 15000);
-        };
-        window.addEventListener('storage', renderCV); 
-    </script>
-</body>
-</html>
+            document.getElementById('nav-name
