@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Karşılaşma | Kadro Sahası</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --grass-a:#1f6b3a;
+    --grass-b:#1a5c31;
+    --chalk:#f4f7ef;
+    --stadium:#0c0f0a;
+    --stadium-2:#141a10;
+    --team1:#1b2a4a;
+    --team1-trim:#e8b93a;
+    --team2:#7a1f2b;
+    --team2-trim:#f1e4c8;
+    --glow:#ffdf8a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    height:100%;
+    background:
+      radial-gradient(1200px 500px at 50% -10%, rgba(255,223,138,0.06), transparent 60%),
+      var(--stadium);
+    color:var(--chalk);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+  }
+  body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-height:100%;
+    padding:28px 16px 60px;
+  }
+
+  /* ---- header ---- */
+  .matchbar{
+    width:100%;
+    max-width:1320px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    margin-bottom:22px;
+  }
+  .team-tag{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .team-tag.right{ align-items:flex-end; text-align:right; }
+  .team-tag .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    letter-spacing:0.14em;
+    color:rgba(244,247,239,0.55);
+    text-transform:uppercase;
+  }
+  .team-tag h2{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:clamp(26px,4.5vw,42px);
+    letter-spacing:0.02em;
+  }
+  .team-tag.left h2{ color:var(--team1-trim); }
+  .team-tag.right h2{ color:var(--team2-trim); }
+  .kickoff{
+    font-family:'Oswald',sans-serif;
+    font-size:15px;
+    letter-spacing:0.08em;
+    color:rgba(244,247,239,0.55);
+    white-space:nowrap;
+  }
+
+  /* ---- stadium / stage ---- */
+  .stadium{
+    position:relative;
+    width:100%;
+    max-width:1320px;
+    aspect-ratio:1.15/1;
+    perspective:1900px;
+    perspective-origin:50% 20%;
+  }
+  .floodlight{
+    position:absolute;
+    width:220px;
+    height:220px;
+    border-radius:50%;
+    background:radial-gradient(circle, var(--glow) 0%, rgba(255,223,138,0.15) 35%, transparent 70%);
+    filter:blur(4px);
+    opacity:0.55;
+    pointer-events:none;
+    z-index:0;
+  }
+  .fl-tl{ top:-60px; left:-70px; }
+  .fl-tr{ top:-60px; right:-70px; }
+
+  .pitch-wrap{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .pitch{
+    position:relative;
+    width:86%;
+    height:92%;
+    transform:rotateX(38deg) rotateZ(0deg);
+    transform-style:preserve-3d;
+    background:
+      repeating-linear-gradient(
+        180deg,
+        var(--grass-a) 0, var(--grass-a) 10%,
+        var(--grass-b) 10%, var(--grass-b) 20%
+      );
+    border-radius:6px;
+    box-shadow:0 0 0 1px rgba(0,0,0,0.4);
+  }
+
+  /* pitch markings via svg, flat on the tilted plane */
+  .markings{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+  }
+
+  /* players billboard upright against the tilt */
+  .player{
+    position:absolute;
+    transform-style:preserve-3d;
+    transform:translate(-50%,-50%) rotateX(-38deg);
+    z-index:5;
+    cursor:default;
+  }
+  .token{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+    transition:transform .25s ease;
+    transform-origin:center bottom;
+  }
+  .player:hover .token{ transform:translateY(-6px) scale(1.12); }
+
+  .badge{
+    width:88px;
+    height:88px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:38px;
+    border:4px solid rgba(255,255,255,0.95);
+    box-shadow:0 10px 18px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(0,0,0,0.15);
+  }
+  .team1 .badge{ background:var(--team1); color:var(--team1-trim); }
+  .team2 .badge{ background:var(--team2); color:var(--team2-trim); }
+  .gk1 .badge{ background:var(--team1-trim); color:var(--team1); }
+  .gk2 .badge{ background:var(--team2-trim); color:var(--team2); }
+
+  .name{
+    font-family:'Inter',sans-serif;
+    font-weight:800;
+    font-size:24px;
+    white-space:nowrap;
+    background:rgba(4,6,3,0.92);
+    padding:6px 16px;
+    border-radius:6px;
+    letter-spacing:0.01em;
+    color:#ffffff;
+    text-shadow:0 1px 2px rgba(0,0,0,0.7);
+    border:1.5px solid rgba(255,255,255,0.18);
+  }
+  .role{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:0.14em;
+    color:var(--glow);
+    background:rgba(4,6,3,0.92);
+    padding:3px 10px;
+    border-radius:5px;
+    opacity:0;
+    transform:translateY(-2px);
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  .player:hover .role{ opacity:1; transform:translateY(0); }
+
+  /* ---- legend / lists below ---- */
+  .rosters{
+    width:100%;
+    max-width:1320px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+    margin-top:34px;
+  }
+  @media (max-width:640px){
+    .rosters{ grid-template-columns:1fr; }
+  }
+  .roster{
+    background:var(--stadium-2);
+    border-radius:10px;
+    padding:22px 26px;
+    border:1px solid rgba(255,255,255,0.06);
+  }
+  .roster h3{
+    font-family:'Oswald',sans-serif;
+    font-size:18px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    margin-bottom:14px;
+    padding-bottom:10px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .roster.r1 h3{ color:var(--team1-trim); }
+  .roster.r2 h3{ color:var(--team2-trim); }
+  .row{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding:12px 0;
+    font-size:21px;
+    font-weight:600;
+    border-bottom:1px solid rgba(255,255,255,0.04);
+  }
+  .row:last-child{ border-bottom:none; }
+  .num{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:20px;
+    width:38px;
+    text-align:center;
+    color:var(--glow);
+  }
+  .pos{
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;
+    letter-spacing:0.08em;
+    color:rgba(244,247,239,0.55);
+    width:44px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="matchbar">
+    <div class="team-tag left">
+      <span class="eyebrow">Ev Sahibi</span>
+      <h2>1. Takım</h2>
+    </div>
+    <div class="kickoff">1&#8211;3&#8211;3&#8211;1</div>
+    <div class="team-tag right">
+      <span class="eyebrow">Konuk</span>
+      <h2>2. Takım</h2>
+    </div>
+  </div>
+
+  <div class="stadium">
+    <div class="floodlight fl-tl"></div>
+    <div class="floodlight fl-tr"></div>
+    <div class="pitch-wrap">
+      <div class="pitch" id="pitch">
+
+        <svg class="markings" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <rect x="1.5" y="1.5" width="97" height="97" fill="none" stroke="#f4f7ef" stroke-opacity="0.55" stroke-width="0.4"/>
+          <line x1="1.5" y1="50" x2="98.5" y2="50" stroke="#f4f7ef" stroke-opacity="0.55" stroke-width="0.4"/>
+          <circle cx="50" cy="50" r="9" fill="none" stroke="#f4f7ef" stroke-opacity="0.55" stroke-width="0.4"/>
+          <circle cx="50" cy="50" r="0.6" fill="#f4f7ef" fill-opacity="0.55"/>
+
+          <!-- top penalty area (team1 goal) -->
+          <rect x="24" y="1.5" width="52" height="15" fill="none" stroke="#f4f7ef" stroke-opacity="0.55" stroke-width="0.4"/>
+          <rect x="37" y="1.5" width="26" height="6" fill="none" stroke="#f4f7ef" stroke-opacity="0.55" stroke-width="0.4"/>
+          <path d="M 38 16 A 9 9 0 0 0 62 16" fill="none" stroke="#f4f7ef" stroke-opacity="0.55" stroke-width="0.4"/>
+
+          <!-- bottom penalty area (team2 goal) -->
+          <rect x="24" y="83.5" width="52" height="15" fill="none" stroke="#f4f7ef" stroke-opacity="0.55" stroke-width="0.4"/>
+          <rect x="37" y="92.5" width="26" height="6" fill="none" stroke="#f4f7ef" stroke-opacity="0.55" stroke-width="0.4"/>
+          <path d="M 38 84 A 9 9 0 0 1 62 84" fill="none" stroke="#f4f7ef" stroke-opacity="0.55" stroke-width="0.4"/>
+
+          <!-- corner arcs -->
+          <path d="M 1.5 4 A 2.5 2.5 0 0 0 4 1.5" fill="none" stroke="#f4f7ef" stroke-opacity="0.55" stroke-width="0.4"/>
+          <path d="M 96 1.5 A 2.5 2.5 0 0 0 98.5 4" fill="none" stroke="#f4f7ef" stroke-opacity="0.55" stroke-width="0.4"/>
+          <path d="M 1.5 96 A 2.5 2.5 0 0 1 4 98.5" fill="none" stroke="#f4f7ef" stroke-opacity="0.55" stroke-width="0.4"/>
+          <path d="M 98.5 96 A 2.5 2.5 0 0 1 96 98.5" fill="none" stroke="#f4f7ef" stroke-opacity="0.55" stroke-width="0.4"/>
+        </svg>
+
+        <div id="players"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="rosters">
+    <div class="roster r1">
+      <h3>1. Takım Kadrosu</h3>
+      <div id="list1"></div>
+    </div>
+    <div class="roster r2">
+      <h3>2. Takım Kadrosu</h3>
+      <div id="list2"></div>
+    </div>
+  </div>
+
+<script>
+  const team1 = [
+    { num: 1,  name: "Can Şaygil",   pos: "KL", role: "Kaleci",     x: 50, y: 8,  gk:true },
+    { num: 5,  name: "Emrah",        pos: "DEF", role: "Defans",    x: 20, y: 22 },
+    { num: 8,  name: "Ozan Uçan",    pos: "DEF", role: "Defans",    x: 50, y: 20 },
+    { num: 60, name: "Can Çakır",    pos: "DEF", role: "Defans",    x: 80, y: 22 },
+    { num: 6,  name: "Mert",         pos: "OS",  role: "Orta Saha", x: 20, y: 34 },
+    { num: 9,  name: "Anıl",         pos: "OS",  role: "Orta Saha", x: 50, y: 32 },
+    { num: 10, name: "Faruk",        pos: "OS",  role: "Orta Saha", x: 80, y: 34 },
+    { num: 7,  name: "Ömer Eke",     pos: "FV",  role: "Forvet",    x: 50, y: 44 },
+  ];
+
+  const team2 = [
+    { num: 0,  name: "Dışardan Oyuncu", pos: "KL", role: "Kaleci",     x: 50, y: 92, gk:true },
+    { num: 5,  name: "Ali",             pos: "DEF", role: "Defans",    x: 20, y: 78 },
+    { num: 3,  name: "Burak",           pos: "DEF", role: "Defans",    x: 50, y: 80 },
+    { num: 44, name: "Hasan",           pos: "DEF", role: "Defans",    x: 80, y: 78 },
+    { num: 6,  name: "Cenk",            pos: "OS",  role: "Orta Saha", x: 20, y: 66 },
+    { num: 13, name: "Ozan Okan",       pos: "OS",  role: "Orta Saha", x: 50, y: 68 },
+    { num: 56, name: "Abdullah",        pos: "OS",  role: "Orta Saha", x: 80, y: 66 },
+    { num: 10, name: "İlker",           pos: "FV",  role: "Forvet",    x: 50, y: 56 },
+  ];
+
+  const playersEl = document.getElementById("players");
+
+  function renderPlayer(p, teamClass, gkClass){
+    const div = document.createElement("div");
+    div.className = "player";
+    div.style.left = p.x + "%";
+    div.style.top = p.y + "%";
+    div.innerHTML = `
+      <div class="token">
+        <div class="badge ${teamClass} ${p.gk ? gkClass : ''}">${p.num}</div>
+        <div class="name">${p.name}</div>
+        <div class="role">${p.role}</div>
+      </div>
+    `;
+    playersEl.appendChild(div);
+  }
+
+  team1.forEach(p => renderPlayer(p, "team1", "gk1"));
+  team2.forEach(p => renderPlayer(p, "team2", "gk2"));
+
+  function renderList(team, elId){
+    const el = document.getElementById(elId);
+    el.innerHTML = team.map(p => `
+      <div class="row">
+        <span class="num">${p.num}</span>
+        <span class="pos">${p.pos}</span>
+        <span>${p.name}</span>
+      </div>
+    `).join("");
+  }
+
+  renderList(team1, "list1");
+  renderList(team2, "list2");
+</script>
+
+</body>
+</html>
