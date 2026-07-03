@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Karşılaşma | Kadro Sahası</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --grass-a:#2f9e4f;
+    --grass-b:#279244;
+    --line:#ffffff;
+    --stadium:#0c0f0a;
+    --stadium-2:#141a10;
+    --team1:#1b2a4a;
+    --team1-trim:#e8b93a;
+    --team2:#c22030;
+    --team2-trim:#f4f0dc;
+    --glow:#ffdf8a;
+    --skin:#e3ac7c;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    height:100%;
+    background:var(--stadium);
+    color:#f4f7ef;
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+  }
+  body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-height:100%;
+    padding:20px 12px 50px;
+  }
+
+  /* ---- header ---- */
+  .matchbar{
+    width:100%;
+    max-width:1320px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .team-tag{
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .team-tag.right{ align-items:flex-end; text-align:right; }
+  .team-tag .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(9px,2vw,13px);
+    letter-spacing:0.14em;
+    color:rgba(244,247,239,0.55);
+    text-transform:uppercase;
+  }
+  .team-tag h2{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:clamp(18px,4.5vw,42px);
+    letter-spacing:0.02em;
+    white-space:nowrap;
+  }
+  .team-tag.left h2{ color:var(--team1-trim); }
+  .team-tag.right h2{ color:var(--team2-trim); }
+  .kickoff{
+    font-family:'Oswald',sans-serif;
+    font-size:clamp(11px,2.2vw,15px);
+    letter-spacing:0.08em;
+    color:rgba(244,247,239,0.55);
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+
+  /* ---- stage ---- */
+  .stadium{
+    position:relative;
+    width:100%;
+    max-width:1320px;
+  }
+  .floodlight{
+    position:absolute;
+    width:220px;
+    height:220px;
+    border-radius:50%;
+    background:radial-gradient(circle, var(--glow) 0%, rgba(255,223,138,0.12) 35%, transparent 70%);
+    filter:blur(4px);
+    opacity:0.45;
+    pointer-events:none;
+    z-index:0;
+  }
+  .fl-tl{ top:-50px; left:-60px; }
+  .fl-tr{ top:-50px; right:-60px; }
+
+  .pitch{
+    position:relative;
+    width:100%;
+    aspect-ratio:0.72/1;
+    background:
+      repeating-linear-gradient(
+        180deg,
+        var(--grass-a) 0, var(--grass-a) 12.5%,
+        var(--grass-b) 12.5%, var(--grass-b) 25%
+      );
+    border-radius:10px;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.35),
+      0 20px 50px rgba(0,0,0,0.55),
+      inset 0 0 60px rgba(0,0,0,0.25);
+    overflow:hidden;
+  }
+  @media (min-width:700px){
+    .pitch{ aspect-ratio:1.15/1; }
+  }
+
+  .markings{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    filter:drop-shadow(0 0 2px rgba(255,255,255,0.3));
+  }
+
+  .players{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+  }
+
+  .player{
+    position:absolute;
+    transform:translate(-50%,-50%);
+    z-index:5;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:min(30%, 130px);
+  }
+  .figure{
+    width:clamp(38px, 9vw, 88px);
+    height:auto;
+    filter:drop-shadow(0 6px 8px rgba(0,0,0,0.5));
+    transition:transform .2s ease;
+  }
+  .player:hover .figure, .player:active .figure{ transform:translateY(-4px) scale(1.08); }
+
+  .name{
+    margin-top:2px;
+    font-family:'Inter',sans-serif;
+    font-weight:800;
+    font-size:clamp(9.5px, 2.6vw, 18px);
+    line-height:1.15;
+    text-align:center;
+    color:#ffffff;
+    text-shadow:0 1px 3px rgba(0,0,0,0.85), 0 0 8px rgba(0,0,0,0.5);
+    background:rgba(4,6,3,0.55);
+    padding:2px 6px;
+    border-radius:5px;
+    max-width:100%;
+    word-break:keep-all;
+    overflow-wrap:break-word;
+    white-space:normal;
+  }
+  .role{
+    margin-top:2px;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:clamp(7px, 1.8vw, 11px);
+    letter-spacing:0.1em;
+    color:var(--glow);
+  }
+
+  /* ---- rosters ---- */
+  .rosters{
+    width:100%;
+    max-width:1320px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-top:26px;
+  }
+  @media (max-width:640px){
+    .rosters{ grid-template-columns:1fr; }
+  }
+  .roster{
+    background:var(--stadium-2);
+    border-radius:10px;
+    padding:16px 18px;
+    border:1px solid rgba(255,255,255,0.06);
+    min-width:0;
+  }
+  .roster h3{
+    font-family:'Oswald',sans-serif;
+    font-size:clamp(14px,3vw,18px);
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    margin-bottom:10px;
+    padding-bottom:8px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .roster.r1 h3{ color:var(--team1-trim); }
+  .roster.r2 h3{ color:var(--team2-trim); }
+  .row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:9px 0;
+    font-size:clamp(13px,3.4vw,18px);
+    font-weight:600;
+    border-bottom:1px solid rgba(255,255,255,0.04);
+  }
+  .row:last-child{ border-bottom:none; }
+  .num{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:clamp(12px,3vw,17px);
+    width:30px;
+    flex-shrink:0;
+    text-align:center;
+    color:var(--glow);
+  }
+  .pos{
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(9px,2.3vw,12px);
+    letter-spacing:0.06em;
+    color:rgba(244,247,239,0.55);
+    width:36px;
+    flex-shrink:0;
+  }
+  .row span:last-child{
+    min-width:0;
+    overflow-wrap:break-word;
+  }
+</style>
+</head>
+<body>
+
+  <div class="matchbar">
+    <div class="team-tag left">
+      <span class="eyebrow">Ev Sahibi</span>
+      <h2>1. Takım</h2>
+    </div>
+    <div class="kickoff">1&#8211;3&#8211;3&#8211;1</div>
+    <div class="team-tag right">
+      <span class="eyebrow">Konuk</span>
+      <h2>2. Takım</h2>
+    </div>
+  </div>
+
+  <div class="stadium">
+    <div class="floodlight fl-tl"></div>
+    <div class="floodlight fl-tr"></div>
+    <div class="pitch" id="pitch">
+
+      <svg class="markings" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <rect x="1.5" y="1.5" width="97" height="97" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.5"/>
+        <line x1="1.5" y1="50" x2="98.5" y2="50" stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.5"/>
+        <circle cx="50" cy="50" r="9" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.5"/>
+        <circle cx="50" cy="50" r="0.7" fill="#ffffff" fill-opacity="0.85"/>
+
+        <rect x="24" y="1.5" width="52" height="15" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.5"/>
+        <rect x="37" y="1.5" width="26" height="6" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.5"/>
+        <path d="M 38 16 A 9 9 0 0 0 62 16" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.5"/>
+
+        <rect x="24" y="83.5" width="52" height="15" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.5"/>
+        <rect x="37" y="92.5" width="26" height="6" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.5"/>
+        <path d="M 38 84 A 9 9 0 0 1 62 84" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.5"/>
+
+        <path d="M 1.5 4 A 2.5 2.5 0 0 0 4 1.5" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.5"/>
+        <path d="M 96 1.5 A 2.5 2.5 0 0 0 98.5 4" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.5"/>
+        <path d="M 1.5 96 A 2.5 2.5 0 0 1 4 98.5" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.5"/>
+        <path d="M 98.5 96 A 2.5 2.5 0 0 1 96 98.5" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.5"/>
+      </svg>
+
+      <div class="players" id="players"></div>
+
+    </div>
+  </div>
+
+  <div class="rosters">
+    <div class="roster r1">
+      <h3>1. Takım Kadrosu</h3>
+      <div id="list1"></div>
+    </div>
+    <div class="roster r2">
+      <h3>2. Takım Kadrosu</h3>
+      <div id="list2"></div>
+    </div>
+  </div>
+
+<script>
+  const team1 = [
+    { num: 1,  name: "Can Şaygil",   pos: "KL", role: "Kaleci",     x: 50, y: 8,  gk:true },
+    { num: 5,  name: "Emrah",        pos: "DEF", role: "Defans",    x: 18, y: 23 },
+    { num: 8,  name: "Ozan Uçan",    pos: "DEF", role: "Defans",    x: 50, y: 20 },
+    { num: 60, name: "Can Çakır",    pos: "DEF", role: "Defans",    x: 82, y: 23 },
+    { num: 6,  name: "Mert",         pos: "OS",  role: "Orta Saha", x: 18, y: 35 },
+    { num: 9,  name: "Anıl",         pos: "OS",  role: "Orta Saha", x: 50, y: 32 },
+    { num: 10, name: "Faruk",        pos: "OS",  role: "Orta Saha", x: 82, y: 35 },
+    { num: 7,  name: "Ömer Eke",     pos: "FV",  role: "Forvet",    x: 50, y: 45 },
+  ];
+
+  const team2 = [
+    { num: 0,  name: "Dışardan Oyuncu", pos: "KL", role: "Kaleci",     x: 50, y: 92, gk:true },
+    { num: 5,  name: "Ali",             pos: "DEF", role: "Defans",    x: 18, y: 77 },
+    { num: 3,  name: "Burak",           pos: "DEF", role: "Defans",    x: 50, y: 80 },
+    { num: 44, name: "Hasan",           pos: "DEF", role: "Defans",    x: 82, y: 77 },
+    { num: 6,  name: "Cenk",            pos: "OS",  role: "Orta Saha", x: 18, y: 65 },
+    { num: 13, name: "Ozan Okan",       pos: "OS",  role: "Orta Saha", x: 50, y: 68 },
+    { num: 56, name: "Abdullah",        pos: "OS",  role: "Orta Saha", x: 82, y: 65 },
+    { num: 10, name: "İlker",           pos: "FV",  role: "Forvet",    x: 50, y: 55 },
+  ];
+
+  function figureSVG(num, kit, trim){
+    return `
+    <svg class="figure" viewBox="0 0 64 100" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="32" cy="95" rx="20" ry="4" fill="rgba(0,0,0,0.35)"/>
+      <rect x="22" y="64" width="7" height="24" rx="3.2" fill="${'var(--skin)'}"/>
+      <rect x="35" y="64" width="7" height="24" rx="3.2" fill="${'var(--skin)'}"/>
+      <rect x="19" y="85" width="13" height="6" rx="2.5" fill="#161616"/>
+      <rect x="32" y="85" width="13" height="6" rx="2.5" fill="#161616"/>
+      <path d="M17 54 h30 v14 q0 5 -5 5 h-5 l-2 -9 -2 9 h-5 q-11 0 -11 -9 z" fill="${trim}"/>
+      <path d="M13 22 q19 -10 38 0 l3 15 -9 4 -2 -7 v35 h-22 v-35 l-2 7 -9 -4 z" fill="${kit}" stroke="rgba(255,255,255,0.55)" stroke-width="1.2"/>
+      <path d="M13 22 q19 -10 38 0 l1.5 7.5 q-20 -9.5 -41 0 z" fill="rgba(255,255,255,0.12)"/>
+      <rect x="4" y="24" width="9" height="21" rx="4.5" fill="${kit}" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+      <rect x="51" y="24" width="9" height="21" rx="4.5" fill="${kit}" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+      <text x="32" y="45" font-family="Oswald, sans-serif" font-weight="700" font-size="17" fill="${trim}" text-anchor="middle">${num}</text>
+      <circle cx="32" cy="11" r="10.5" fill="var(--skin)"/>
+      <path d="M21.5 9 q10 -9 21 0 q0 -8 -10.5 -8 q-10.5 0 -10.5 8 z" fill="#2b1a10"/>
+    </svg>`;
+  }
+
+  const playersEl = document.getElementById("players");
+
+  function renderPlayer(p, kit, trim){
+    const div = document.createElement("div");
+    div.className = "player";
+    div.style.left = p.x + "%";
+    div.style.top = p.y + "%";
+    div.innerHTML = `
+      ${figureSVG(p.num, kit, trim)}
+      <div class="name">${p.name}</div>
+      <div class="role">${p.pos}</div>
+    `;
+    playersEl.appendChild(div);
+  }
+
+  team1.forEach(p => renderPlayer(p, p.gk ? "var(--team1-trim)" : "var(--team1)", p.gk ? "var(--team1)" : "var(--team1-trim)"));
+  team2.forEach(p => renderPlayer(p, p.gk ? "var(--team2-trim)" : "var(--team2)", p.gk ? "var(--team2)" : "var(--team2-trim)"));
+
+  function renderList(team, elId){
+    const el = document.getElementById(elId);
+    el.innerHTML = team.map(p => `
+      <div class="row">
+        <span class="num">${p.num}</span>
+        <span class="pos">${p.pos}</span>
+        <span>${p.name}</span>
+      </div>
+    `).join("");
+  }
+
+  renderList(team1, "list1");
+  renderList(team2, "list2");
+</script>
+
+</body>
+</html>
